@@ -13,7 +13,7 @@ def extract_text_from_pdf(pdf_path):
 # Filter Text (Basic Placeholder) -- Will need to add more advanced filtering functionality likely
 def filter_text(text):
     lines = text.split('\n')
-    filtered_lines = [line for line in lines if line.strip() and not line.strip().isdigit()]
+    filtered_lines = [line for line in lines if line.strip() and not line.strip().isdigit()] # removes lines with only spaces or digits
     return ' '.join(filtered_lines)
 
 # Convert Text to Audio
@@ -37,6 +37,6 @@ def pdf_to_audio(pdf_path, output_audio):
 
 # Function Call
 if __name__ == "__main__":
-    pdf_path = "book.pdf"        # Replace with your PDF file
-    output_audio = "audiobook.mp3"  # Output audio file name
+    pdf_path = "3dprinting.pdf"        # Replace with your PDF file
+    output_audio = "3dprinting.mp3"  # Output audio file name
     pdf_to_audio(pdf_path, output_audio)
