@@ -2,13 +2,8 @@
 This project will be software to turn PDFs of text into audio recordings. My primary use case for this project is to take books with PDFs online and turn them into audiobooks.
 
 To Do:
-- GET IT WORKING
-- Modify text filtering
-- Add other audio file types to save as
-- Build out a small backend and frontend UI to host this on the web (Django or Nodejs?)
+- Use llama or similar llm to filter out the content and provide options for book or research paper
+- Build out a UI for use
+- Package it using pyinstaller and upload to github with instructions
 
 
-
-Project Evolution:
-- Started with the first commit, ran into issues with google translate rate limiting gtts calls, pivoted to hosting my own model
-- Used
