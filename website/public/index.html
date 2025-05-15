@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PDF2Audio</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 20px; /* space between title and box */
+    }
+
+    h1.title-words {
+      margin: 0;
+      font-weight: bold;
+      font-size: 2.5rem;
+      color: #333;
+    }
+
+    .upload-box {
+      background: white;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      padding: 30px;
+      width: 400px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: border-color 0.3s ease;
+    }
+
+    .upload-box.dragover {
+      border-color: #007BFF;
+      background-color: #f0f8ff;
+    }
+
+    #fileName {
+      margin: 15px 0;
+      font-style: italic;
+      color: #555;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .button {
+      margin: 10px 5px 20px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="title-words">PDF2Audio</h1>
+
+  <form class="upload-box" action="/submit" method="POST" enctype="multipart/form-data" id="uploadForm">
+    <p>Upload a PDF file</p>
+
+    <div id="fileName">No file selected</div>
+
+    <label class="button">
+      Select File
+      <input type="file" name="pdfFile" id="fileInput" accept="application/pdf" />
+    </label>
+
+    <br>
+    <button type="submit" class="button">Submit</button>
+  </form>
+
+  <script>
+    const uploadBox = document.querySelector('.upload-box');
+    const fileInput = document.getElementById('fileInput');
+    const fileNameDisplay = document.getElementById('fileName');
+
+    // Handle file selection via input
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      fileNameDisplay.textContent = file ? file.name : 'No file selected';
+    });
+
+    // Handle drag & drop
+    uploadBox.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadBox.classList.add('dragover');
+    });
+
+    uploadBox.addEventListener('dragleave', () => {
+      uploadBox.classList.remove('dragover');
+    });
+
+    uploadBox.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadBox.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+
+      if (file && file.type === 'application/pdf') {
+        fileInput.files = e.dataTransfer.files;
+        fileNameDisplay.textContent = file.name;
+      } else {
+        fileNameDisplay.textContent = 'Please drop a valid PDF file';
+      }
+    });
+  </script>
+
+</body>
+</html>
