@@ -26,7 +26,7 @@ def pdf_to_audio(pdf_path, output_audio, text_save):
     print("Filtering text...")
     clean_text = filter_text(raw_text)
     print(clean_text)
-    with open(output_text, "w", encoding="utf-8") as f:
+    with open(text_save, "w", encoding="utf-8") as f:
         f.write(clean_text)
 
     print("Converting to audio...")
@@ -36,9 +36,6 @@ def pdf_to_audio(pdf_path, output_audio, text_save):
     print(f"Audiobook saved as {output_audio}")
 
 
-# Function Call
 if __name__ == "__main__":
-    pdf_path = "3dprinting.pdf"        # Replace with your PDF file
-    output_audio = "test.wav"  # Output audio file name
-    output_text = "test.txt"
-    pdf_to_audio(pdf_path=pdf_path, output_audio=output_audio, text_save = output_text)
+    import sys
+    pdf_to_audio(pdf_path=sys.argv[1], output_audio=sys.argv[2], text_save=sys.argv[3])
