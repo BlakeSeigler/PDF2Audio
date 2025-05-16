@@ -15,7 +15,6 @@ import re
 # Load the api key and model name
 load_dotenv()
 HF_API_KEY = os.getenv('HF_API_KEY')
-MODEL = "mistralai/Mistral-7B-Instruct-v0.1"
 
 
 def extract_text_from_pdf(pdf_path):
