@@ -29,7 +29,7 @@ def submit_pdf():
         file.save(filepath)
 
         subprocess.run([
-            "python3", "utilities/PDF2Audio.py", filepath
+            "python3", "utilities/PDF2Audio.py", filepath, tempdir
         ])
 
         base_name = os.path.splitext(filename)[0]
