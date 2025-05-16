@@ -2,6 +2,7 @@ from flask import Flask, request, send_file, render_template_string
 from werkzeug.utils import secure_filename
 import os
 import tempfile
+import zipfile
 import subprocess
 
 app = Flask(__name__)
@@ -27,16 +28,23 @@ def submit_pdf():
         filepath = os.path.join(tempdir, filename)
         file.save(filepath)
 
-        # Run your ML logic
-        output_audio = os.path.join(tempdir, "audio.wav")
-        output_text = os.path.join(tempdir, "text.txt")
-
         subprocess.run([
-            "python3", "utilities/PDF2Audio.py", output_text
+            "python3", "utilities/PDF2Audio.py", filepath
         ])
 
-        # Return the audio file
-        return send_file(output_audio, as_attachment=True)
+        base_name = os.path.splitext(filename)[0]
+        zip_path = os.path.join(tempdir, f"{base_name}.zip")
+
+        if not os.path.exists(zip_path):
+            return "Zip file was not generated", 500
+
+        # Return the zip file for download
+        return send_file(
+            zip_path,
+            mimetype='application/zip',
+            as_attachment=True,
+            download_name=f"{base_name}.zip"
+        )
 
 @app.route('/')
 def index():
