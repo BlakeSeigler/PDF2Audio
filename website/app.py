@@ -32,8 +32,7 @@ def submit_pdf():
         output_text = os.path.join(tempdir, "text.txt")
 
         subprocess.run([
-            "python3", "utilities/PDF2Audio.py", 
-            filepath, output_audio, output_text
+            "python3", "utilities/PDF2Audio.py", filepath
         ])
 
         # Return the audio file

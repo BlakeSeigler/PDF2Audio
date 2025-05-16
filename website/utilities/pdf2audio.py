@@ -144,12 +144,8 @@ if __name__ == "__main__":
     CLI entry point, will be called by the server. Called with:
         python3 PDF2Audio.py <pdf_path> <output_audio_path> <output_text_path>
     """
-    if len(sys.argv) != 4:
-        print("Usage: python3 PDF2Audio.py <pdf_path> <output_audio_path> <output_text_path>")
+    if len(sys.argv) != 2:
+        print("Usage: python3 PDF2Audio.py <pdf_path>")
         sys.exit(1)
-
     pdf_path = sys.argv[1]
-    output_audio = sys.argv[2]
-    output_text = sys.argv[3]
-
-    pdf_to_audio(pdf_path, output_audio, output_text)
+    zip_file = pdf_to_audio_bundle(pdf_path)
