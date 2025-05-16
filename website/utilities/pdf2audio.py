@@ -7,6 +7,16 @@
 import PyPDF2
 from TTS.api import TTS
 import sys
+import requests
+import os
+from dotenv import load_dotenv
+import re
+
+# Load the api key and model name
+load_dotenv()
+HF_API_KEY = os.getenv('HF_API_KEY')
+MODEL = "mistralai/Mistral-7B-Instruct-v0.1"
+
 
 def extract_text_from_pdf(pdf_path):
     """
@@ -27,22 +37,70 @@ def extract_text_from_pdf(pdf_path):
 
 
 
-def filter_text(text):
+def chunk_and_filter_main_content(text, model_url="https://api-inference.huggingface.co/models/mistralai/Mixtral-8x7B-Instruct-v0.1", max_chars=3000):
     """
-    Cleans up raw PDF text by removing empty lines and lines with only digits.
+    Splits the raw PDF text into chunks, then uses an LLM to remove anything that isn't core content
+    (titles, footers, headers, copyright, etc), while preserving main content verbatim.
 
     Arguments:
-    text: Raw string of extracted text from the PDF
+    - text: Full extracted raw text from a PDF
+    - model_url: Hugging Face model inference endpoint
+    - max_chars: Max character size per prompt (based on model token limits)
 
     Returns:
-    filtered_text: A cleaned string with meaningful content only
+    - filtered_content: Full cleaned version of the text
     """
-    lines = text.split('\n')  # Split the full text into individual lines
-    filtered_lines = [
-        line for line in lines
-        if line.strip() and not line.strip().isdigit()
-    ]  # Keep non-empty, non-numeric lines
-    return ' '.join(filtered_lines)  # Join lines into a single string
+    if not HF_API_KEY:
+        raise ValueError("Missing HF_TOKEN in environment variables.")
+
+    headers = {
+        "Authorization": f"Bearer {HF_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    # Split by sentence and reassemble into chunks
+    sentences = re.split(r'(?<=[.!?]) +', text)
+    chunks = []
+    current_chunk = ""
+
+    for sentence in sentences:
+        if len(current_chunk) + len(sentence) <= max_chars:
+            current_chunk += sentence + " "
+        else:
+            chunks.append(current_chunk.strip())
+            current_chunk = sentence + " "
+
+    if current_chunk:
+        chunks.append(current_chunk.strip())
+
+    filtered_chunks = []
+
+    for chunk in chunks:
+        prompt = (
+            "Remove any page numbers, titles, copyright info, headers, and non-content text. "
+            "Return only the main body content *exactly as written*, without rewording or summarizing.\n\n"
+            f"Text:\n{chunk}"
+        )
+
+        response = requests.post(
+            model_url,
+            headers=headers,
+            json={"inputs": prompt}
+        )
+
+        if response.status_code != 200:
+            print(f"Error from HF API: {response.status_code} — {response.text}")
+            continue
+
+        data = response.json()
+        if isinstance(data, list) and "generated_text" in data[0]:
+            filtered_chunks.append(data[0]["generated_text"])
+        elif isinstance(data, list) and "summary_text" in data[0]:  # fallback
+            filtered_chunks.append(data[0]["summary_text"])
+        else:
+            print("Unexpected response:", data)
+
+    return " ".join(filtered_chunks)
 
 
 
@@ -59,8 +117,7 @@ def pdf_to_audio(pdf_path, output_audio, text_save):
     raw_text = extract_text_from_pdf(pdf_path)
 
     print("Filtering text...")
-    clean_text = filter_text(raw_text)
-    print(clean_text)  # Optional: remove in production for long PDFs
+    clean_text = chunk_and_filter_main_content(raw_text)
 
     with open(text_save, "w", encoding="utf-8") as f:
         f.write(clean_text)
