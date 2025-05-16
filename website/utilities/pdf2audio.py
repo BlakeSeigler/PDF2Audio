@@ -9,6 +9,7 @@ from TTS.api import TTS
 import sys
 import requests
 import os
+import zipfile
 from dotenv import load_dotenv
 import re
 
@@ -103,29 +104,38 @@ def chunk_and_filter_main_content(text, model_url="https://api-inference.hugging
 
 
 
-def pdf_to_audio(pdf_path, output_audio, text_save):
-    """
-    Complete pipeline to convert a PDF to an audio file using text-to-speech.
 
-    Arguments:
-    pdf_path: Path to the input PDF file
-    output_audio: Path where the generated audio file will be saved
-    text_save: Path where the cleaned text will be saved as a .txt file
+def pdf_to_audio_bundle(pdf_path):
     """
-    print("Extracting text from PDF...")
+    Full pipeline: extract, filter, TTS, and zip output files.
+    Returns path to the .zip file containing audio + cleaned text.
+    """
+    base = os.path.splitext(os.path.basename(pdf_path))[0]
+    audio_path = f"{base}-audio.wav"
+    text_path = f"{base}-text.txt"
+    zip_path = f"{base}.zip"
+
+    print("Extracting text...")
     raw_text = extract_text_from_pdf(pdf_path)
 
-    print("Filtering text...")
+    print("Filtering content...")
     clean_text = chunk_and_filter_main_content(raw_text)
 
-    with open(text_save, "w", encoding="utf-8") as f:
+    print("Saving text...")
+    with open(text_path, "w", encoding="utf-8") as f:
         f.write(clean_text)
 
-    print("Converting to audio...")
+    print("Generating audio...")
     tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=True, gpu=False)
-    tts.tts_to_file(text=clean_text, file_path=output_audio)
+    tts.tts_to_file(text=clean_text, file_path=audio_path)
 
-    print(f"Audiobook saved as {output_audio}")
+    print("Creating zip file...")
+    with zipfile.ZipFile(zip_path, 'w') as zipf:
+        zipf.write(audio_path)
+        zipf.write(text_path)
+
+    print(f"Packaged result in: {zip_path}")
+    return zip_path
 
 
 
