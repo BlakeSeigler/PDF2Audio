@@ -58,6 +58,8 @@ def chunk_and_filter_main_content(text, model_url="https://api-inference.hugging
         "Content-Type": "application/json"
     }
 
+    import pdb; pdb.set_trace()
+
     # Split by sentence and reassemble into chunks
     sentences = re.split(r'(?<=[.!?]) +', text)
     chunks = []
@@ -77,7 +79,7 @@ def chunk_and_filter_main_content(text, model_url="https://api-inference.hugging
 
     for chunk in chunks:
         prompt = (
-            "Remove any page numbers, titles, copyright info, headers, and non-content text. "
+            "Remove any page numbers, titles, copyright info, headers, and non-content text from this pdf text. There is a chance that none of these exist in the text"
             "Return only the main body content *exactly as written*, without rewording or summarizing.\n\n"
             f"Text:\n{chunk}"
         )
@@ -99,7 +101,6 @@ def chunk_and_filter_main_content(text, model_url="https://api-inference.hugging
             filtered_chunks.append(data[0]["summary_text"])
         else:
             print("Unexpected response:", data)
-
     return " ".join(filtered_chunks)
 
 

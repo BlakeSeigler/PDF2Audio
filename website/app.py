@@ -34,11 +34,11 @@ def submit_pdf():
         # Run PDF-to-audio conversion
         result = subprocess.run(
             ["python3", "utilities/PDF2Audio.py", filepath],
-            cwd=tempdir,
             capture_output=True,
             text=True
         )
 
+        print(result.returncode, os.path.exists(zip_output))
         if result.returncode != 0 or not os.path.exists(zip_output):
             print("Error:", result.stderr)
             return "PDF processing failed", 500
