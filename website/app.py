@@ -27,16 +27,24 @@ def submit_pdf():
         filepath = os.path.join(tempdir, filename)
         file.save(filepath)
 
-        # Run your ML logic
-        output_audio = os.path.join(tempdir, "audio.wav")
-        output_text = os.path.join(tempdir, "text.txt")
+        # Construct expected zip output path
+        base_name = os.path.splitext(filename)[0]
+        zip_output = os.path.join(tempdir, f"{base_name}.zip")
 
-        subprocess.run([
-            "python3", "utilities/PDF2Audio.py", filepath
-        ])
+        # Run PDF-to-audio conversion
+        result = subprocess.run(
+            ["python3", "utilities/PDF2Audio.py", filepath],
+            cwd=tempdir,
+            capture_output=True,
+            text=True
+        )
 
-        # Return the audio file
-        return send_file(output_audio, as_attachment=True)
+        if result.returncode != 0 or not os.path.exists(zip_output):
+            print("Error:", result.stderr)
+            return "PDF processing failed", 500
+
+        # Return the zip file
+        return send_file(zip_output, as_attachment=True, download_name=f"{base_name}.zip")
 
 @app.route('/')
 def index():
