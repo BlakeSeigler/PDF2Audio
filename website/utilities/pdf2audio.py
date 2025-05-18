@@ -9,6 +9,7 @@ from TTS.api import TTS
 import sys
 import os 
 import zipfile
+from llm_controller import llm_text_filter
 
 def extract_text_from_pdf(pdf_path):
     """
@@ -39,12 +40,7 @@ def filter_text(text):
     Returns:
     filtered_text: A cleaned string with meaningful content only
     """
-    lines = text.split('\n')  # Split the full text into individual lines
-    filtered_lines = [
-        line for line in lines
-        if line.strip() and not line.strip().isdigit()
-    ]  # Keep non-empty, non-numeric lines
-    return ' '.join(filtered_lines)  # Join lines into a single string
+    return llm_text_filter(raw_text=text)
 
 
 
