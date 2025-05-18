@@ -1,3 +1,9 @@
+# Keep out the venv
 PDF2Audio/
+
+# misc directroy files to ignore
 .env
 .DS_Store
+
+# ignore the model
+./resources/tinyllama-1.1b-chat-v1.0.Q5_K_S.gguf 

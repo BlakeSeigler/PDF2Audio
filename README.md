@@ -4,6 +4,10 @@ This project will be software to turn PDFs of text into audio recordings. My pri
 This is the main branch source code. This code is complete and can be downloaded and run as the hosted website. However, the filtering is very primitive. That being said, there are other branches in which the filtering has been upgraded using LLMs. These LLMs will be setup in different ways in order to provide a learning opportunity.
 
 
+# Use
+To use this code, just clone or copy it to your system (its pretty small), download the dependencies in the requirements, and then download the llama model gguf for "tinyllama-1.1b-chat-v1.0.Q5_K_S.gguf" and put it in the PDF2Audio/website/resources directory
+
+
 # Testing
 After getting the project fully working I ran a few tests and this is what I have found:
 
