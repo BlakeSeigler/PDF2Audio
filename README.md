@@ -5,7 +5,10 @@ This is the main branch source code. This code is complete and can be downloaded
 
 
 # Use
-To use this code, just clone or copy it to your system (its pretty small), download the dependencies in the requirements, and then download the llama model gguf for "tinyllama-1.1b-chat-v1.0.Q5_K_S.gguf" and put it in the PDF2Audio/website/resources directory
+To use this code, just clone or copy it to your system (its pretty small), download the dependencies in the requirements, and then download the llama model gguf for "tinyllama-1.1b-chat-v1.0.Q5_K_S.gguf" and put it in the PDF2Audio/website/resources directory. You can download the model here:
+https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF
+
+You can then change your working directroy to the /website directory and run "flask run" in the CLI to run the website on your local hardware. This software can also be thrown on a webserver and hosted but I didn't feel like doing that.
 
 
 # Testing
